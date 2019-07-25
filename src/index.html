@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- 不推荐直接在这里引用任何包和任何资源,全写在main.js中 -->
+    <!-- 
+        安装nodejs时会安装npm 把npm更新到最新版本: install npm@latest -g
+        1. 初始化npm:   npm init -y
+        2. 安装JQuery:   npm i jquery -S  会产生一个node_modules的文件夹,里面是jquery模块
+        3. 新建一个main.js,在里面写:import $ from 'jquery';,在里面写好jq代码,
+        4. 我们在本页面写:<script src="main.js"></script>,但发现浏览器报错,不支持es6语法.
+        5. 这时,我们需要借助webpack来转换main.js文件.==================================
+            5.1 安装webpack: 全局安装: npm i webpack -g   或安装到项目依赖中: npm i webpack --save-dev 也就是npm i webpack -D  
+                注意:非全局安装不能用命令来执行.只在能package.json文件中调用.
+            5.3 webpack最基本的使用:如果是全局安装,直接执行: webpack ./src/main.js ./dist/bundle.js   把main.js转换为bundle.js文件,然后在本页面中<script src="../dist/bundle.js"></script>
+                如果是依赖项止安装,我们需要在package.json中的"scripts": {}中来调用.  如"scripts": {"dev": "webpack ./src/main.js ./dist/bundle.js" }, 我们在终端: npm run dev 命令来调用.
+            5.3 不建议直接用命令,写webpack的配置文件(webpack.config.js): 参照文件里内容.写好配置文件后可以不要参数,直接运行webpack命令就行.
+        6. 每次改完main.js文件后需要运行 webpack 命令 或 npm run dev 也太麻烦,所以要安装 webpack-dev-server,它依赖于webpack,所以项目中必须以依赖方式安装webpack它才能正常运行.
+            6.1 安装webpack-dev-server 命令: npm i webpack-dev-server -D  如果webpack是全局安装的,还需要:npm i webpack -D 新版本还需要:npm i webpack-cli -D
+            6.2 因webpack-dev-server需要依赖项目安装,所以我们运行它需要在 package.json中来配置它运行. "scripts": {"dev": "webpack-dev-server"}, 
+                此时如果不报错,则成功启动一个HTTP服务 http://localhost:8080/ 并自动监空webpack.config.js中的文件变动,并自动编译.
+                注意:每当main.js变动时,webpack-dev-server会自动重新编译它,但得注意,它不会生成文件,只是在内存中....而且在根目录下:http://localhost:8080/bundle.js 项目要想及时响应main.js变动,就需在本页面中引入此js文件:<script src="../bundle.js"></script>
+        7. webpack-dev-server常用命令参数:在package.json中加参数."scripts": {"dev": "webpack-dev-server --open"},
+            7.1 --open 自动打开浏览器
+            7.2 --open --port 3000 指定端口为3000
+            7.3 --open --port 3000 --contentBase src 打开自动进入src目录.
+            7.4 --open --port 3000 --contentBase src --hot 执更新,每次生成少量的代码更新到内存中.可以节省资源,而且页面不刷新就更改了.(注意不加--hot之前,每次main.js一保存,页面就刷新,加上--hot后页面不刷新了.)
+        8. webpack-dev-server常用命令参数配置方法2:不推荐使用,相对来说麻烦些
+            8.1 在package.json中不加任何参数."scripts": {"dev": "webpack-dev-server"},
+            8.2 在webpack.config.js中配置:    devServer: {open: true,port: 3000,contentBase: 'src',hot: true},但不家不少麻烦事.主要是热更新.
+                8.2.1 在webpack.config.js 中头部加上: const webpack = require('webpack');
+                8.2.2 在webpack.config.js 中与devServer平级加上一个 ,plugins:[webpack.HotModuleReplacementPlugin()],
+        9. html-webpack-plugin的两个基本作用.
+            9.1 安装html-webpack-plugin  命令:npm i html-webpack-plugin -D
+            9.2 配置html-webpack-plugin:在webpack.config.js文件中配置:
+                9.2.1 导入组件:const htmlWebpackPlugin = require('html-webpack-plugin');
+                9.2.2 配置插件节点:    plugins:[new htmlWebpackPlugin({template: path.join(__dirname, './src/index.html'),filename: 'index.html'})],
+            9.3 当使用html-webpack-plugin之后,我们不再需要手动导入<script src="../bundle.js"></script>了,它会自动给我们导入处理好的bundle.js到页面中.
+        10. 配置处理css样式表的第三方loader.
+            10.1 在main.js中使用 import './css/index.css'; 导入css文件.发现报错,需要合适的加载器.
+            10.2 安装加载器: npm style-loader css-loader -D
+            10.3 配置:module: {rules: [{test: /\.css$/, use: ['style-loader','css-loader']},],},
+                    其中test: /\.css$/ 是一个正则 regexp.test(), use是引入加载器.
+            注意:webpack处理第三方库文件类型的过程:
+                1.发现这个要处理的文件不是js文件,然后就去配置文件中查找有没有对应的第三方 loader 规则,
+                2.如果能找到对应的规则,就会调用对应的 loader 处理这种类型的文件.
+                3.在调用 loader 的时候,是从后往前调用的.
+                4.当最后一个 loader 调用完毕,就会把处理的结果交给webpack进行打包合并,最终输出到bundle.js中去.
+        11. 配置处理sell样式表的三方loader.
+            11.1 在main.js中使用 import './css/index.less'; 导入less文件.发现报错,需要合适的加载器.
+            11.2 安装加载器: npm i less-loader -D 安装完后提示需要less支持,进一步安装:npm i less -D
+            11.3 配置(片段):{test: /\.less$/, use: ['style-loader','css-loader','less-loader']},  //注意,先把less转为css,再把css转为style再合并打包,顺序不能乱来.
+        12. 配置处理scss样式表的三方loader.
+            12.1 在main.js中使用 import './css/index.scss'; 导入scss文件.发现报错,需要合适的加载器.
+            12.2 安装加载器: npm i scss-loader -D 安装完后提示需要node-sass支持,进一步安装:npm i node-sass -D (注意,我安装时不提示需要node-sass,但发现如果不安装node-sass,则npm run dev时启不动,报一堆错误,安装完就好了,)
+                    注意:一般情况下,用npm i node-sass -D是安装不成功的,建议安装配置cnpm来安装. cnpm i node-sass -D
+                    安装cnpm，输入以下命令：npm install -g cnpm --registry=https://registry.npm.taobao.org
+            12.3 配置(片段):{test: /\.less$/, use: ['style-loader','css-loader','sass-loader']},
+     -->
+     <!-- <script src="main.js"></script> -->
+     <!-- <script src="../bundle.js"></script> -->
+    <title>主页</title>
+</head>
+<body>
+<ul>
+    <li>这是第01个LI标签</li>
+    <li>这是第02个LI标签</li>
+    <li>这是第03个LI标签</li>
+    <li>这是第04个LI标签</li>
+    <li>这是第05个LI标签</li>
+    <li>这是第06个LI标签</li>
+    <li>这是第07个LI标签</li>
+    <li>这是第08个LI标签</li>
+    <li>这是第09个LI标签</li>
+    <li>这是第10个LI标签</li>
+
+</ul>
+</body>
+</html>
