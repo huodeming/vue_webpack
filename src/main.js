@@ -9,6 +9,8 @@ import $ from 'jquery';//相当于 const $ = require('jquery');
 import './css/index.css';
 import './css/index.less';
 import './css/index.scss';
+//如果要通过路径的形式,去引入node_modules 中相关的文件,可以直接省略路径前面的node_modules这一层目录,直接写名的名称,然后 后面跟上具休的文件路径.
+import 'bootstrap/dist/css/bootstrap.css';//不写node_modules也行.
 
 
 $(function(){

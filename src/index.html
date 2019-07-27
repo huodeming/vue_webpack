@@ -58,6 +58,18 @@
                     注意:一般情况下,用npm i node-sass -D是安装不成功的,建议安装配置cnpm来安装. cnpm i node-sass -D
                     安装cnpm，输入以下命令：npm install -g cnpm --registry=https://registry.npm.taobao.org
             12.3 配置(片段):{test: /\.less$/, use: ['style-loader','css-loader','sass-loader']},
+        13. 配置处理css中的url:如果css中使用了背景图片或字体文件等,webpack又不能处理了.需要安装配置 loader 加载器.
+            13.1 在本页面增加一个div,在index.css中给它指定一个背景图片,此时报错了.需要合适的 loader.
+            13.2 安装url-loader: npm i url-loader file-loader -D 它内部需要 file-loader的支持,所以我们必须装上它.
+            13.3 配置 {test: /\.(jpeg|jpg|jpe|gif|png|bmp)$/, use: ['url-loader']},
+            13.4 在浏览器中打开,发现图片是一个data:base64的数据,好处是不用重新请求资源.建议小图片这么用.
+                    如果小图片建议这么用,那么大图片不建议,那url-loader给我们提供了一个固定参数url-loader?limit=字节, 如:{test: /\.(jpeg|jpg|jpe|gif|png|bmp)$/, use: ['url-loader?limit=20877']},
+                    加了参数后,就会小于或等于20877字节的文件会转换成base64数据,而大于此值的文件就直接加载文件.
+            13.5 url-loader第二个参数:使用原文件名与原扩展名:use: 'url-loader?limit=20877'&name=[name].[ext]';,但如果有两张重名图片,就会出问题.为了解决这个问题,可以在前面加hash值.
+                    如:&name=[hash:8]-[name].[ext]  //表示提取哈希值前8位.最长32位.
+        14. 配置处理css中的url2:字体图标.
+            14.1 安装bootstrap: npm i bootstrap -S    
+            14.2 配置{test: /\.(ttf|eot|svg|woff|woff2)$/, use: 'url-loader'},
      -->
      <!-- <script src="main.js"></script> -->
      <!-- <script src="../bundle.js"></script> --> 
@@ -75,7 +87,7 @@
     <li>这是第08个LI标签</li>
     <li>这是第09个LI标签</li>
     <li>这是第10个LI标签</li>
-
 </ul>
+<div id="div01"></div>
 </body>
 </html>
