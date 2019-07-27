@@ -17,3 +17,11 @@ $(function(){
     $('li:odd').css('backgroundColor','green');
     $('li:even').css('backgroundColor',function(){return '#ccc';});
 });
+
+class Person{
+    static info = {id:1, name:'huodeming'};
+    a = 10;
+}
+let p = new Person();
+console.log(Person.info);
+console.log(p.a);

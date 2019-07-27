@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 //这个配置文件,其实就是一个JS文件,通过 Node 的的模块操作,向外暴露了一个配置对象.
 module.exports = {
-    //指定模式,新版本才不会出警告!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //指定webpack运行模式,新版本才不会出警告!!!!!!!!!!!!!!!!!!!!!!!!!!
     mode: 'development',
     //在配置文件中,需要手动指定入口 与  出口.
     //入口
@@ -36,6 +36,7 @@ module.exports = {
             {test: /\.scss$/, use: ['style-loader','css-loader','sass-loader']},
             {test: /\.(jpeg|jpg|jpe|gif|png|bmp)$/, use: 'url-loader?limit=20877'},
             {test: /\.(ttf|eot|svg|woff|woff2)$/, use: 'url-loader'},
+            {test: /\.js$/, use: 'babel-loader', exclude: /node_modules/},
         ],
     },
 }

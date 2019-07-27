@@ -70,6 +70,44 @@
         14. 配置处理css中的url2:字体图标.
             14.1 安装bootstrap: npm i bootstrap -S    
             14.2 配置{test: /\.(ttf|eot|svg|woff|woff2)$/, use: 'url-loader'},
+        15. 通过 Babel 可以帮我们将 ES6高级的语法转换为 es5 的低级的语法.
+            webpack中,提供了两套命令来解决:
+            安装(注意限babel-core 6.x版本):
+                第一套包: npm i babel-core babel-loader babel-plugin-transform-runtime -D
+                第二套包: npm i babel-preset-env babel-preset-stage-0 -D //也可以安装更老的 babel-preset-es2015,但env更强大.
+                    安装好如下:
+                    "babel-core": "^6.26.0",
+                    "babel-loader": "^7.1.2",
+                    "babel-plugin-transform-runtime": "^6.23.0",
+                    "babel-preset-env": "^1.6.1",
+                    "babel-preset-stage-0": "^6.24.1",
+            配置:在webpack.config.js中添加新的配置规则module: {rules: [....在这里进行配置...]}
+                {test:/\.js$/,use:['babel-loader'],exclude:/node_modules/}//配置babel来转换高级的语法,所有.js文件,但不包括node_modules中的.
+            配置2:在根目录下创建一个 .babelrc 的文件,里面用JSON格式写:
+                {
+                    "presets": ["env","stage-0"],
+                    "plugins": ["transform-runtime"] 
+                }
+            安装(babel/core 7.x版本)
+                第一套包:cnpm i babel-loader -D
+                第二套包:npm i @babel-core @babel/plugin-proposal-class-properties @babel/plugin-transform-runtime @babel/preset-env @babel/runtime -D
+                    最新版本如下:    
+                    "@babel/core": "^7.5.5",
+                    "@babel/plugin-proposal-class-properties": "^7.5.5",
+                    "@babel/plugin-transform-runtime": "^7.5.5",
+                    "@babel/preset-env": "^7.5.5",
+                    "@babel/runtime": "^7.5.5",
+                    "babel-loader": "^8.0.6",
+                配置:在webpack.config.js中添加新的配置规则与上面相同
+                    {test:/\.js$/,use:['babel-loader'],exclude:/node_modules/}//配置babel来转换高级的语法,所有.js文件,但不包括node_modules中的.
+                配置2:在根目录下创建一个 .babelrc 的文件,里面用JSON格式写:
+                    {
+                        "presets": ["@babel/preset-env"],
+                        "plugins": [
+                        "@babel/plugin-transform-runtime",
+                        "@babel/plugin-proposal-class-properties"
+                        ]
+                    }
      -->
      <!-- <script src="main.js"></script> -->
      <!-- <script src="../bundle.js"></script> --> 
